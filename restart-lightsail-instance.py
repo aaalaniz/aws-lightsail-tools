@@ -13,16 +13,21 @@ lightsail = boto3.client('lightsail')
 
 # Stop the instance
 print(f"Stopping Lightsail instance '{instance_name}'")
-lightsail.stop_instance(instanceName=instance_name)
+try:
+    lightsail.stop_instance(instanceName=instance_name)
 
-# Wait until the instance is stopped
-while True:
-    response = lightsail.get_instance(instanceName=instance_name)
-    state = response['instance']['state']['name']
-    if state == 'stopped':
-        break
-    time.sleep(3)
+    # Wait until the instance is stopped
+    retries = 0
+    while retries < 10:
+        response = lightsail.get_instance(instanceName=instance_name)
+        state = response['instance']['state']['name']
+        if state == 'stopped':
+            break
+        time.sleep(3)
+        retries = retries + 1
 
-# Start the instance
-print(f"Starting Lightsail instance '{instance_name}'")
-lightsail.start_instance(instanceName=instance_name)
+    # Start the instance
+    print(f"Starting Lightsail instance '{instance_name}'")
+    lightsail.start_instance(instanceName=instance_name)
+except:
+    print("An error occurred trying to restart the instance. Ignoring the error...")
