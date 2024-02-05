@@ -1,0 +1,51 @@
+{
+    "alarms": [
+        {
+            "name": "31d00ad1-7ca5-40b7-9b75-2ab635f2973a",
+            "arn": "arn:aws:lightsail:us-east-1:1234:Alarm/31d00ad1-7ca5-40b7-9b75-123635f2973a",
+            "createdAt": "Thu, 11 Jan 2024 11:53:34 GMT",
+            "location": {
+                "availabilityZone": "all",
+                "regionName": "us-west-1"
+            },
+            "resourceType": "Alarm",
+            "supportCode": "23342452345/31d00ad1-7ca5-40b7-9b75-2ab635f2973a",
+            "monitoredResourceInfo": {
+                "arn": "arn:aws:lightsail:us-east-1:1234:Instance/31d00ad1-7ca5-40b7-9b75-2ab635f2973a",
+                "name": "instance-name",
+                "resourceType": "Instance"
+            },
+            "comparisonOperator": "GreaterThanThreshold",
+            "evaluationPeriods": 1,
+            "period": 300,
+            "threshold": 1.0,
+            "datapointsToAlarm": 1,
+            "treatMissingData": "notBreaching",
+            "statistic": "Sum",
+            "metricName": "StatusCheckFailed_Instance",
+            "state": "ALARM",
+            "unit": "Count",
+            "contactProtocols": [
+                "Email"
+            ],
+            "notificationTriggers": [
+                "ALARM",
+                "OK"
+            ],
+            "notificationEnabled": true
+        }
+    ],
+    "ResponseMetadata": {
+        "RequestId": "31d00ad1-7ca5-40b7-9b75-2ab635f2973a",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Tue, 30 Jan 2024 11:45:02 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "100",
+            "connection": "keep-alive",
+            "x-amzn-requestid": "31d00ad1-7ca5-40b7-9b75-2ab635f2973a"
+        },
+        "RetryAttempts": 0
+    }
+}
