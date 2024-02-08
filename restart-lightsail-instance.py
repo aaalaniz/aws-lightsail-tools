@@ -18,7 +18,7 @@ try:
 
     # Wait until the instance is stopped
     retries = 0
-    while retries < 10:
+    while retries < 30:
         response = lightsail.get_instance(instanceName=instance_name)
         state = response['instance']['state']['name']
         if state == 'stopped':

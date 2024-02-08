@@ -1,5 +1,4 @@
 import boto3
-import time
 import sys
 
 # Get the instance name from the command-line argument
@@ -13,14 +12,12 @@ lightsail = boto3.client('lightsail')
 
 # Get the alarms
 print(f"Getting instance alarms '{instance_name}'")
-try:
-    alarms_response = lightsail.get_alarms(
-        monitoredResourceName=instance_name
-    )
+alarms_response = lightsail.get_alarms(
+    monitoredResourceName=instance_name
+)
+print(f"Alarms response '{alarms_response}'")
 
-    # Check that each alarm is okay
-    for alarm in alarms_response['alarms']:
-        print(f"Checking alarm {alarm['name']}")
-        assert alarm['state'] != 'ALARM'
-except:
-    print("An error occurred attempting to get or check the instance alarm. Ignoring the failure...")
+# Check that each alarm is okay
+for alarm in alarms_response['alarms']:
+    print(f"Checking alarm {alarm['name']}")
+    assert alarm['state'] != 'ALARM'
