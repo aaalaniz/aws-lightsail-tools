@@ -125,3 +125,20 @@ class AwsLightsailMonitor:
         except Boto3Error as error:
             logging.error(f"Error occurred restarting the instance: {error}")
             return RestartInstanceFailed(error=error)
+
+    def restart_if_failing(self, instance_name):
+        """
+        Restarts a lightsail instance if the status check is failing
+
+        Parameters:
+        - instance_name: Name of the Lightstail instance to check and restart
+
+        Returns:
+        - A AwsLightsailMonitorResult that indicates the instance is okay or successfully restarted
+        """
+        check_instance_result = self.check_instance(instance_name)
+
+        if check_instance_result == InstanceStatusCheckFailed:
+            return self.restart_instance(instance_name)
+        else:
+            return check_instance_result

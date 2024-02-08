@@ -104,6 +104,30 @@ class TestAwsLightsailMonitor(unittest.TestCase):
         monitor_result = self.aws_lightsail_monitor.restart_instance("test-instance")
         self.assertEqual(monitor_result, RestartInstanceSuccess)
 
+    def test_restart_when_failing_with_failure_to_get_alarms(self):
+        get_alarms_error = TestLightsailError("A failure occurred getting the instance alarms")
+        self.lightsail.get_alarms.side_effect = get_alarms_error
+        monitor_result = self.aws_lightsail_monitor.restart_if_failing("test-instance")
+        self.assertEqual(monitor_result, CheckInstanceFailed(error=get_alarms_error))
+
+    def test_restart_when_failing_success(self):
+        alarm_failing_response = read_json_fixture('aws-lightsail-response-alarm-failing.json')
+        stopped_response = read_json_fixture('aws-lightsail-get-instance-response-stopped.json')
+        self.lightsail.get_alarms.return_value = alarm_failing_response
+        self.lightsail.get_instance.return_value = stopped_response
+        monitor_result = self.aws_lightsail_monitor.restart_if_failing("test-instance")
+        self.assertEqual(monitor_result, RestartInstanceSuccess)
+
+    def test_restart_when_failing_fails(self):
+        alarm_failing_response = read_json_fixture('aws-lightsail-response-alarm-failing.json')
+        start_instance_error = TestLightsailError("A failure occurred starting the instance")
+        stopped_response = read_json_fixture('aws-lightsail-get-instance-response-stopped.json')
+        self.lightsail.get_alarms.return_value = alarm_failing_response
+        self.lightsail.get_instance.return_value = stopped_response
+        self.lightsail.start_instance.side_effect = start_instance_error
+        monitor_result = self.aws_lightsail_monitor.restart_if_failing("test-instance")
+        self.assertEqual(monitor_result, RestartInstanceFailed(error=start_instance_error))
+
 
 if __name__ == '__main__':
     unittest.main()
