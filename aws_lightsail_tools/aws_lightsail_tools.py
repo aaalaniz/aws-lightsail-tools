@@ -1,5 +1,6 @@
 import time
 from boto3.exceptions import Boto3Error
+import logging
 
 
 class AwsLightsailMonitorResult:
@@ -62,17 +63,22 @@ class AwsLightsailMonitor:
         """
 
         try:
+            logging.info(f"Getting alarms for instance {instance_name}")
             alarms_response = self.lightsail.get_alarms(
                 monitoredResourceName=instance_name
             )
 
             for alarm in alarms_response['alarms']:
+                logging.info(f"Checking alarm {alarm['metricName']}")
                 if alarm['state'] == 'ALARM' and alarm['metricName'] == 'StatusCheckFailed_Instance':
+                    logging.warning(f"{instance_name} status check failed")
                     return InstanceStatusCheckFailed
+                logging.info(f"Alarm {alarm['metricName']} ok")
 
             return InstanceStatusOk
 
         except Boto3Error as error:
+            logging.error(f"Error occurred checking the instance: {error}")
             return CheckInstanceFailed(error=error)
 
     def restart_instance(self, instance_name):
@@ -87,7 +93,7 @@ class AwsLightsailMonitor:
         """
         
         # Stop the instance
-        print(f"Stopping Lightsail instance '{instance_name}'")
+        logging.info(f"Stopping instance {instance_name}")
         try:
             self.lightsail.stop_instance(instanceName=instance_name)
 
@@ -95,22 +101,27 @@ class AwsLightsailMonitor:
             retries = 0
             instance_stopped = False
             while retries < self.max_restart_waits:
-                print(f"Getting Lightsail instance '{instance_name}'")
+                logging.info(f"Getting instance {instance_name}")
                 response = self.lightsail.get_instance(instanceName=instance_name)
                 state = response['instance']['state']['name']
+                logging.info(f"{instance_name} state: {state}")
                 if state == 'stopped':
+                    logging.info(f"{instance_name} has stopped")
                     instance_stopped = True
                     break
+                logging.info(f"Waiting for {instance_name} to stop. Trying again")
                 time.sleep(self.restart_wait_time)
                 retries = retries + 1
                 
             if not instance_stopped:
+                logging.error(f"Timed out waiting for {instance_name} to stop")
                 return RestartInstanceFailed(error=RuntimeError("Timed out waiting for instance to stop"))
 
             # Start the instance
-            print(f"Starting Lightsail instance '{instance_name}'")
+            logging.info(f"Starting instance {instance_name}")
             self.lightsail.start_instance(instanceName=instance_name)
             
             return RestartInstanceSuccess
         except Boto3Error as error:
+            logging.error(f"Error occurred restarting the instance: {error}")
             return RestartInstanceFailed(error=error)
