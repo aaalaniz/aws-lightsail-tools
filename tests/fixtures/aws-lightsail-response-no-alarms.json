@@ -1,0 +1,16 @@
+{
+  "alarms": [],
+  "ResponseMetadata": {
+    "RequestId": "31d00ad1-7ca5-40b7-9b75-2ab635f2973a",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "server": "Server",
+      "date": "Thu, 11 Jan 2024 11:53:34 GMT",
+      "content-type": "application/x-amz-json-1.1",
+      "content-length": "100",
+      "connection": "keep-alive",
+      "x-amzn-requestid": "31d00ad1-7ca5-40b7-9b75-2ab635f2973a"
+    },
+    "RetryAttempts": 0
+  }
+}
